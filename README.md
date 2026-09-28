@@ -45,16 +45,25 @@ Clone the repository, set up a virtual environment, and install dependencies:
 ```bash
 git clone [https://github.com/kiranmutyala/DocuBot.git](https://github.com/kiranmutyala/DocuBot.git)
 cd DocuBot
-
-python3 -m venv venv
-source venv/bin/activate
-
-pip install -r requirements.txt
-2. Secrets & Environment Setup
-Copy the template environment file and add your Groq API key:
+macOS / Linux:
 
 Bash
-cp .env.example .env
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+Windows (PowerShell / Command Prompt):
+
+PowerShell
+python -m venv venv
+.\venv\Scripts\Activate
+pip install -r requirements.txt
+2. Secrets & Environment Setup
+Copy the template environment file:
+
+macOS / Linux: cp .env.example .env
+
+Windows: copy .env.example .env
+
 Edit .env and configure your API credentials:
 
 Ini, TOML
