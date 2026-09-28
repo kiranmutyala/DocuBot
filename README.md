@@ -5,7 +5,8 @@ DocuBot is an enterprise-grade Conversational Retrieval-Augmented Generation (RA
 ---
 
 ## Architecture & Data Flow
-ser Document → [Document Processor] → Text Extraction & Recursive Chunking
+
+User Document → [Document Processor] → Text Extraction & Recursive Chunking
 ↓
 [ChromaDB + HuggingFace Embeddings]
 ↓
@@ -38,16 +39,30 @@ Grounded Response + Sources
 ## Quick Start Guide
 
 ### 1. Installation
+
+Clone the repository, set up a virtual environment, and install dependencies:
+
 ```bash
+git clone [https://github.com/kiranmutyala/DocuBot.git](https://github.com/kiranmutyala/DocuBot.git)
+cd DocuBot
+
 python3 -m venv venv
 source venv/bin/activate
+
 pip install -r requirements.txt
-2. Secrets Setup
-Copy .env.example to .env and set your key:
+2. Secrets & Environment Setup
+Copy the template environment file and add your Groq API key:
+
+Bash
+cp .env.example .env
+Edit .env and configure your API credentials:
 
 Ini, TOML
-GROQ_API_KEY=gsk_your_key_here
+GROQ_API_KEY=gsk_your_actual_api_key_here
 GROQ_MODEL=openai/gpt-oss-120b
-3. Launch App
+3. Launch Application
+Start the Streamlit interface:
+
 Bash
 streamlit run app/frontend/streamlit_app.py
+Once launched, open your web browser and navigate to http://localhost:8501.
