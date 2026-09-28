@@ -6,17 +6,19 @@ DocuBot is an enterprise-grade Conversational Retrieval-Augmented Generation (RA
 
 ## Architecture & Data Flow
 
+```
 User Document → [Document Processor] → Text Extraction & Recursive Chunking
-↓
-[ChromaDB + HuggingFace Embeddings]
-↓
+                                              ↓
+                               [ChromaDB + HuggingFace Embeddings]
+                                              ↓
 User Question → [Retrieval Service] → Dense Similarity Search → Top-K Chunks
-↓
-[Grounded Context] + System Safety Guardrails
-↓
-Groq API (openai/gpt-oss-120b)
-↓
-Grounded Response + Sources
+                                              ↓
+                        [Grounded Context] + System Safety Guardrails
+                                              ↓
+                                Groq API (`openai/gpt-oss-120b`)
+                                              ↓
+                                 Grounded Response + Sources
+```
 
 ---
 
@@ -42,33 +44,44 @@ Grounded Response + Sources
 Clone the repository, set up a virtual environment, and install dependencies:
 
 ```bash
-git clone [https://github.com/kiranmutyala/DocuBot.git](https://github.com/kiranmutyala/DocuBot.git)
+git clone https://github.com/kiranmutyala/DocuBot.git
 cd DocuBot
+```
 
-macOS / Linux:
+**macOS / Linux:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
 
-Windows (PowerShell / Command Prompt):
+**Windows (PowerShell / Command Prompt):**
+```powershell
 python -m venv venv
-.\venv\Scripts\Activate
+.env\Scripts\Activate
 pip install -r requirements.txt
+```
 
-2. Secrets & Environment Setup
+### 2. Secrets & Environment Setup
+
 Copy the template environment file:
 
-macOS / Linux: cp .env.example .env
+- **macOS / Linux:** `cp .env.example .env`
+- **Windows:** `copy .env.example .env`
 
-Windows: copy .env.example .env
+Edit `.env` and configure your API credentials:
 
-Edit .env and configure your API credentials:
-
+```ini
 GROQ_API_KEY=gsk_your_actual_api_key_here
 GROQ_MODEL=openai/gpt-oss-120b
+```
 
-3. Launch Application
+### 3. Launch Application
+
 Start the Streamlit interface:
-streamlit run app/frontend/streamlit_app.py
 
-Once launched, open your web browser and navigate to http://localhost:8501.
+```bash
+streamlit run app/frontend/streamlit_app.py
+```
+
+Once launched, open your web browser and navigate to `http://localhost:8501`.
