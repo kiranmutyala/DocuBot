@@ -51,7 +51,7 @@ DocuBot uses a multi-step reasoning workflow managed by `AgentService` (`app/bac
 
 ## Quick Start Guide & Local Setup
 
-#### 1. Installation
+### 1. Installation
 
 Clone the repository, set up a virtual environment, and install dependencies:
 
