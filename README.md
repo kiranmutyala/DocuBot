@@ -58,7 +58,7 @@ pip install -r requirements.txt
 **Windows (PowerShell / Command Prompt):**
 ```powershell
 python -m venv venv
-.env\Scripts\Activate
+.\venv\Scripts\Activate
 pip install -r requirements.txt
 ```
 
