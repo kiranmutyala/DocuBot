@@ -1,39 +1,53 @@
-# DocuBot - Multi-Format AI Agentic Document Intelligence System
-An enterprise-grade, conversational document Q&A platform built on Retrieval-Augmented Generation (RAG) with safety guardrails and multi-format document support (PDF, TXT, CSV, Excel). Powered by Streamlit, LangChain, ChromaDB, and the Groq API.
+# DocuBot: Multi-Format Conversational RAG System
 
-## System Architecture & Workflow
+DocuBot is an enterprise-grade Conversational Retrieval-Augmented Generation (RAG) system built with LangChain, ChromaDB, HuggingFace Embeddings, and Groq LLMs.
 
-1. User File Upload (PDF, TXT, CSV, Excel)
-2. Document Processor: Extracts Text & Metadata Header (Pages, Rows, Sheets)
-3. Text Chunking: RecursiveCharacterTextSplitter (chunk_size=1000, overlap=100)
-4. Vector Store: SentenceTransformers Embeddings (all-MiniLM-L6-v2) -> ChromaDB
-5. DocuBot Agentic Engine: Ingests User Query + Chat History + Metadata Context
-6. Groq LLM Service: Applies Safety Guardrails & Generates Grounded Response
-7. Streamlit Frontend: Multi-turn Conversational Chat UI (st.chat_input)
+---
 
-## Agent Roles & Capabilities
+## Architecture & Data Flow
+ser Document → [Document Processor] → Text Extraction & Recursive Chunking
+↓
+[ChromaDB + HuggingFace Embeddings]
+↓
+User Question → [Retrieval Service] → Dense Similarity Search → Top-K Chunks
+↓
+[Grounded Context] + System Safety Guardrails
+↓
+Groq API (openai/gpt-oss-120b)
+↓
+Grounded Response + Sources
 
-- Document Parsing Agent: Dynamically parses .pdf, .txt, .csv, .xlsx, and .xls files.
-- Metadata Intelligence Agent: Prepends total pages, sheet lists, and table dimensions.
-- Retrieval & Context Verification Agent: Fetches relevant semantic text chunks from ChromaDB.
-- Guardrail & Safety Agent: Enforces strict boundary rules ("DO NOT HALLUCINATE").
 
-## System Setup & Execution Guide
+---
 
-1. Activate Virtual Environment:
-   source venv/bin/activate
+## Architectural Rationale: Dense Vector Search vs. Lexical TF-IDF
 
-2. Install Dependencies:
-   pip install -r requirements.txt
+- **Dense Semantic Retrieval**: DocuBot utilizes `sentence-transformers/all-MiniLM-L6-v2` embeddings stored in `ChromaDB`. Unlike traditional sparse TF-IDF systems that rely solely on exact keyword overlaps, dense vector search understands semantic context, synonyms, and intent across complex document queries.
+- **Modularity**: The project cleanly separates document ingestion (`app/core/document_processor.py`), vector management (`app/core/vector_store.py`), LLM orchestration (`app/backend/agent_service.py`), and presentation (`app/frontend/streamlit_app.py`).
 
-3. Set Up Environment Secrets:
-   cp .env.example .env
-   (Edit .env to add your GROQ_API_KEY)
+---
 
-4. Run the Application:
-   streamlit run app/frontend/streamlit_app.py
+## Key Features
 
-## Limitations & Challenges
+- **Multi-Format Ingestion**: Supports PDF (`pypdf`), Excel (`openpyxl`), CSV (`pandas`), and Plain Text (`.txt`).
+- **Safety Guardrails**: Strict system prompting (`DO NOT HALLUCINATE`) restricts answers exclusively to retrieved document chunks.
+- **Session Management**: Full conversation history tracking, source citations, and state resets.
 
-- In-memory vector store indexing per session.
-- Pre-extracting metadata header chunks was implemented to prevent structural context loss during similarity search.
+---
+
+## Quick Start Guide
+
+### 1. Installation
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+2. Secrets Setup
+Copy .env.example to .env and set your key:
+
+Ini, TOML
+GROQ_API_KEY=gsk_your_key_here
+GROQ_MODEL=openai/gpt-oss-120b
+3. Launch App
+Bash
+streamlit run app/frontend/streamlit_app.py
