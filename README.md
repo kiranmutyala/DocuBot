@@ -19,7 +19,6 @@ Groq API (openai/gpt-oss-120b)
 ↓
 Grounded Response + Sources
 
-
 ---
 
 ## Architectural Rationale: Dense Vector Search vs. Lexical TF-IDF
