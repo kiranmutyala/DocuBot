@@ -54,7 +54,7 @@ DocuBot uses a multi-step reasoning workflow managed by `AgentService` (`app/bac
 Clone the repository, set up a virtual environment, and install dependencies:
 
 ```bash
-git clone [https://github.com/kiranmutyala/DocuBot.git](https://github.com/kiranmutyala/DocuBot.git)
+git clone https://github.com/kiranmutyala/DocuBot.git
 cd DocuBot
 
 macOS / Linux:
