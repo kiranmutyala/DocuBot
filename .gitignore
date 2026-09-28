@@ -1,0 +1,9 @@
+venv/
+.env
+temp*
+__pycache__/
+*.pyc
+.DS_Store
+submission.zip
+DocuBot_submission.zip
+*.tar.gz
