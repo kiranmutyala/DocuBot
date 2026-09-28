@@ -1,5 +1,9 @@
 venv/
+.venv/
 .env
+.env.swp
+*.swp
+.agents/
 temp*
 __pycache__/
 *.pyc
