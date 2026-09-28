@@ -29,6 +29,17 @@ User Question → [Retrieval Service] → Dense Similarity Search → Top-K Chun
 
 ---
 
+## Agentic Workflow & Agent Roles
+
+DocuBot uses a multi-step reasoning workflow managed by `AgentService` (`app/backend/agent_service.py`):
+
+1. **Planner / Input Inspector**: Analyzes user queries, verifies input state, and handles empty or unsupported document inputs.
+2. **Retrieval Agent**: Invokes vector search tools over ChromaDB to fetch relevant document contexts based on semantic similarity.
+3. **Reasoning & Synthesis Engine**: Combines retrieved context with conversation history to construct grounded answers using Groq (`openai/gpt-oss-120b`).
+4. **Validation Guardrail**: Ensures responses strictly reference retrieved source chunks and triggers fallbacks (`I cannot find relevant information in the uploaded documents`) when context is insufficient.
+
+---
+
 ## Key Features
 
 - **Multi-Format Ingestion**: Supports PDF (`pypdf`), Excel (`openpyxl`), CSV (`pandas`), and Plain Text (`.txt`).
@@ -37,7 +48,7 @@ User Question → [Retrieval Service] → Dense Similarity Search → Top-K Chun
 
 ---
 
-## Quick Start Guide
+## Quick Start Guide & Local Setup
 
 ### 1. Installation
 
@@ -58,7 +69,7 @@ pip install -r requirements.txt
 **Windows (PowerShell / Command Prompt):**
 ```powershell
 python -m venv venv
-.\venv\Scripts\Activate
+.env\Scripts\Activate
 pip install -r requirements.txt
 ```
 
@@ -85,3 +96,31 @@ streamlit run app/frontend/streamlit_app.py
 ```
 
 Once launched, open your web browser and navigate to `http://localhost:8501`.
+
+---
+
+## Production Deployment Steps
+
+### Deploying to Streamlit Community Cloud
+
+1. Push your latest code to GitHub (`main` branch).
+2. Go to [share.streamlit.io](https://share.streamlit.io) and connect your GitHub repository.
+3. Set the **Main file path** to `app/frontend/streamlit_app.py`.
+4. In **Advanced Settings / Secrets**, paste your environment variables:
+   ```toml
+   GROQ_API_KEY = "gsk_your_actual_api_key"
+   GROQ_MODEL = "openai/gpt-oss-120b"
+   ```
+5. Click **Deploy**.
+
+---
+
+## System Limitations & Development Challenges
+
+### Limitations
+1. **In-Memory / Local Vector Store**: The current ChromaDB configuration runs locally. For enterprise scale, migration to managed vector stores (e.g., Pinecone or Qdrant) is recommended.
+2. **Context Window Boundaries**: Very large tabular datasets (CSV/Excel) require strategic chunking to avoid exceeding LLM context limits during prompt construction.
+
+### Challenges Faced & Mitigations
+- **Hallucination Suppression**: Addressed by enforcing strict grounding system prompts (`temperature=0`) and explicit fallback responses when cosine similarity thresholds are not met.
+- **Cross-Platform Compatibility**: Resolved OS-specific virtual environment activation paths and file encoding discrepancies during document ingestion.
