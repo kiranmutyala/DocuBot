@@ -1,57 +1,57 @@
 import os
+from typing import List
 import pandas as pd
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-class DocumentProcessor:
-    def load_and_split(self, file_path: str):
-        file_extension = os.path.splitext(file_path)[1].lower()
-        file_name = os.path.basename(file_path)
-        
-        documents = []
-        meta_info = ""
 
-        if file_extension == ".pdf":
+class DocumentProcessor:
+    """
+    Document Processor for DocuBot.
+    Handles extraction and chunking for PDF, TXT, CSV, and Excel (XLSX/XLS) files.
+    """
+
+    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 100):
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=["\n\n", "\n", " ", ""]
+        )
+
+    def process_file(self, file_path: str, original_filename: str = None) -> List[Document]:
+        """
+        Extracts content from supported document types and returns chunked Document objects.
+        """
+        display_name = original_filename or os.path.basename(file_path)
+        file_ext = os.path.splitext(display_name)[1].lower()
+        documents = []
+
+        if file_ext == ".pdf":
             loader = PyPDFLoader(file_path)
             documents = loader.load()
-            page_count = len(documents)
-            meta_info = f"DOCUMENT METADATA: File Name: {file_name}, Total Pages: {page_count}, File Type: PDF."
 
-        elif file_extension == ".txt":
+        elif file_ext == ".txt":
             loader = TextLoader(file_path, encoding="utf-8")
             documents = loader.load()
-            meta_info = f"DOCUMENT METADATA: File Name: {file_name}, File Type: Plain Text."
 
-        elif file_extension == ".csv":
+        elif file_ext == ".csv":
             df = pd.read_csv(file_path)
-            content = df.to_string(index=False)
-            documents = [Document(page_content=content, metadata={"source": file_path})]
-            meta_info = f"DOCUMENT METADATA: File Name: {file_name}, File Type: CSV, Total Rows: {len(df)}, Total Columns: {len(df.columns)}."
+            text_content = df.to_string(index=False)
+            documents = [Document(page_content=text_content, metadata={"source": display_name})]
 
-        elif file_extension in [".xlsx", ".xls"]:
-            excel_file = pd.ExcelFile(file_path)
-            sheet_contents = []
-            for sheet_name in excel_file.sheet_names:
-                df = pd.read_excel(excel_file, sheet_name=sheet_name)
-                sheet_contents.append(f"--- Sheet: {sheet_name} ---\n" + df.to_string(index=False))
-            
-            full_text = "\n\n".join(sheet_contents)
-            documents = [Document(page_content=full_text, metadata={"source": file_path})]
-            meta_info = f"DOCUMENT METADATA: File Name: {file_name}, File Type: Excel, Total Sheets: {len(excel_file.sheet_names)} ({', '.join(excel_file.sheet_names)})."
+        elif file_ext in [".xlsx", ".xls"]:
+            df = pd.read_excel(file_path)
+            text_content = df.to_string(index=False)
+            documents = [Document(page_content=text_content, metadata={"source": display_name})]
 
         else:
-            raise ValueError(f"Unsupported file format: {file_extension}")
-        
-        # Split text into chunks
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-        chunks = splitter.split_documents(documents)
-        
-        # Prepend metadata header chunk so vector store can retrieve structural info
-        meta_doc = Document(
-            page_content=f"{meta_info} Total Extracted Chunks: {len(chunks)}.",
-            metadata={"source": file_path}
-        )
-        chunks.insert(0, meta_doc)
-        
-        return chunks, meta_info
+            raise ValueError(f"Unsupported file format: {file_ext}")
+
+        # Standardize metadata source field to display_name
+        for doc in documents:
+            doc.metadata["source"] = display_name
+
+        # Chunk documents
+        chunks = self.text_splitter.split_documents(documents)
+        return chunks
