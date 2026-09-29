@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+
+# Automatically inject project root into Python's sys.path
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+
 import os
 import tempfile
 import streamlit as st
